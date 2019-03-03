@@ -1,0 +1,40 @@
+---
+- name: this playbook is meant to populate a container image
+  hosts: all
+  vars:
+    ansible_bender:
+      target_image:
+        cmd: 'release-bot --debug --configuration /conf.yaml'
+  vars_files:
+  - '{{ image_build_vars }}'
+  tasks:
+  - name: install required packages
+    dnf:
+      name:
+      - python3-pip
+      - git
+      - python3-twine
+      - python3-pyyaml
+      - twine
+      state: present
+  - name: install release bot
+    pip:
+      name: '{{ release_bot_source }}'
+      state: present
+  - name: ensure release-bot is installed
+    command: release-bot --help
+  - name: copy config file
+    copy:
+      src: ./conf.yaml
+      dest: /conf.yaml
+    tags:
+    - stop-layering
+  - name: copy pypirc
+    copy:
+      src: ./pypirc
+      dest: ~/.pypirc
+  - name: copy github app cert
+    copy:
+      src: ./github-app.private-key.pem
+      dest: /github-app.private-key.pem
+    ignore_errors: true

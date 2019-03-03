@@ -1,2 +1,53 @@
 ---
-# tasks file for ansible-role-release-bot
+- name: create a directory for all the files
+  file:
+    state: directory
+    path: '{{ playbook_dir }}/build-dir'
+- name: add release-bot config file
+  copy:
+    content: '{{ release_bot_conf }}'
+    dest: '{{ build_dir_path }}/conf.yaml'
+- name: set vars file for the image build
+  copy:
+    content: '{{ image_build }}'
+    dest: '{{ build_dir_path }}/build-vars.yaml'
+- name: copy pypirc
+  copy:
+    src: '{{ image_build.pypirc_path }}'
+    dest: '{{ build_dir_path }}/pypirc'
+  when: image_build.github_app_cert_path != ""
+- name: copy Github app .pem file is there is one
+  copy:
+    src: '{{ image_build.github_app_cert_path }}'
+    dest: '{{ build_dir_path }}/github-app.private-key.pem'
+  when: image_build.github_app_cert_path != ""
+- name: copy the playbook to build-dir
+  copy:
+    src: '{{ role_path }}/files/build_recipe.yml'
+    dest: '{{ build_dir_path }}/p.yaml'
+
+- name: build the image
+  command: ansible-bender build --extra-ansible-args='-e image_build_vars={{ build_dir_path }}/build-vars.yaml' {{ build_dir_path }}/p.yaml registry.fedoraproject.org/fedora:29 {{ image_name }}
+  args:
+    chdir: '{{ build_dir_path }}'
+
+# - name: try to remove previous container
+#   command: podman rm -f rb
+#   ignore_errors: true
+
+- name: create systemd unit
+  template:
+    src: systemd-unit
+    dest: '{{ systemd_units_path }}/release-bot-{{ release_bot_conf.repository_name }}.service'
+- name: enable the unit
+  systemd:
+    daemon_reload: true
+    enabled: true
+    name: 'release-bot-{{ release_bot_conf.repository_name }}'
+    scope: user
+- name: start release-bot
+  systemd:
+    state: started
+    name: 'release-bot-{{ release_bot_conf.repository_name }}'
+    scope: user
+
