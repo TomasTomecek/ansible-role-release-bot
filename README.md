@@ -1,38 +1,73 @@
-Role Name
-=========
+# ansible-role-release-bot
 
-A brief description of the role goes here.
+Run [release-bot](https://github.com/user-cont/release-bot) for your project in a podman container.
+
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+[ansible-bender](https://github.com/TomasTomecek/ansible-bender) needs to be present on your system.
+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+---
+# content of the configuration file for release bot
+# for more info, see https://github.com/user-cont/release-bot#private-repository
+release_bot_conf:
+  repository_name: "ansible-role-release-bot"
+  repository_owner: "TomasTomecek"
+  github_username: ""
+  # time in seconds bot should sleep
+  refresh_interval: 600
 
-Dependencies
-------------
+  github_token: ""
+  github_app_installation_id: ""
+  github_app_id: ""
+  # this is the path within the container, you should not change this
+  github_app_cert_path: "/github-app.private-key.pem"
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+# needs to be fedora, we are using the `dnf` module
+base_image_name: registry.fedoraproject.org/fedora:29
+image_name: release-bot-{{ release_bot_conf.repository_name }}
+
+# working directory
+build_dir_path: '{{ playbook_dir }}/build-dir'
+
+# configuration for the container image build process
+image_build:
+  # argument for `pip install {{ release_bot_source }}`
+  # you can install bot from git master 'git+https://github.com/user-cont/release-bot.git'
+  release_bot_source: release-bot
+  # a path to your Github app certificate
+  github_app_cert_path: ""
+  # a path to .pypirc file
+  pypirc_path: ""
+
+container_name: release-bot-{{ release_bot_conf.repository_name }}-cont
+# a path where the unit should be placed
+systemd_units_path: ~/.config/systemd/user/
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+```yaml
+---
+- hosts: localhost
+  connection: local
+  vars:
+    image_build:
+      release_bot_source: release-bot
+      github_app_cert_path: "path/to/app-key.pem"
+      pypirc_path: "path/to/pypirc"
+  roles:
+  - ansible-role-release-bot
+```
 
 License
 -------
 
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+MIT
