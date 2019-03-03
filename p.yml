@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    image_build:
+      release_bot_source: release-bot
+      github_app_cert_path: "tests/app-key.pem"
+      pypirc_path: "tests/pypirc"
+  roles:
+  - ansible-role-release-bot
+
