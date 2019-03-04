@@ -43,11 +43,11 @@
   systemd:
     daemon_reload: true
     enabled: true
-    name: 'release-bot-{{ release_bot_conf.repository_name }}'
+    name: '{{ systemd_unit_name }}'
     scope: user
 - name: start release-bot
   systemd:
     state: started
-    name: 'release-bot-{{ release_bot_conf.repository_name }}'
+    name: '{{ systemd_unit_name }}'
     scope: user
 

@@ -29,5 +29,6 @@ image_build:
   pypirc_path: ""
 
 container_name: release-bot-{{ release_bot_conf.repository_name }}-cont
+systemd_unit_name: release-bot-{{ release_bot_conf.repository_name }}
 # a path where the unit should be placed
 systemd_units_path: ~/.config/systemd/user/
