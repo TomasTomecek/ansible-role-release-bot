@@ -3,7 +3,9 @@ Description=Release-bot in a container ({{ container_name }})
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/podman run --rm --name {{ container_name }} {{ image_name }}
+ExecStartPre=-/usr/bin/podman rm --name {{ container_name }}
+ExecStartPre=-/usr/bin/podman create --name {{ container_name }} {{ image_name }}
+ExecStart=/usr/bin/podman start -a {{ container_name }}
 ExecStop=/usr/bin/podman stop -t 10 {{ container_name }}
 KillMode=process
 
