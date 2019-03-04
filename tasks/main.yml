@@ -2,7 +2,7 @@
 - name: create a directory for all the files
   file:
     state: directory
-    path: '{{ playbook_dir }}/build-dir'
+    path: '{{ build_dir_path }}'
 - name: add release-bot config file
   copy:
     content: '{{ release_bot_conf }}'
