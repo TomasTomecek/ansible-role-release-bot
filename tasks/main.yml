@@ -45,9 +45,9 @@
     enabled: true
     name: '{{ systemd_unit_name }}'
     scope: user
-- name: start release-bot
+- name: (re)start release-bot
   systemd:
-    state: started
+    state: restarted
     name: '{{ systemd_unit_name }}'
     scope: user
 
