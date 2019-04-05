@@ -18,6 +18,8 @@ base_image_name: registry.fedoraproject.org/fedora:29
 image_name: release-bot-{{ release_bot_conf.repository_name }}
 
 build_dir_path: '{{ playbook_dir }}/build-dir'
+# extra arguments to `ansible-bender build`, e.g. `--no-cache`
+extra_bender_args : ''
 
 # configuration for the container image build process
 image_build:

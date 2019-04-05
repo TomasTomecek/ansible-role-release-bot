@@ -27,7 +27,7 @@
     dest: '{{ build_dir_path }}/p.yaml'
 
 - name: build the image
-  command: ansible-bender build --extra-ansible-args='-e image_build_vars={{ build_dir_path }}/build-vars.yaml' {{ build_dir_path }}/p.yaml registry.fedoraproject.org/fedora:29 {{ image_name }}
+  command: ansible-bender build {{ extra_bender_args }} --extra-ansible-args='-e image_build_vars={{ build_dir_path }}/build-vars.yaml' {{ build_dir_path }}/p.yaml {{ base_image_name }} {{ image_name }}
   args:
     chdir: '{{ build_dir_path }}'
 

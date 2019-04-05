@@ -35,6 +35,8 @@ image_name: release-bot-{{ release_bot_conf.repository_name }}
 
 # working directory
 build_dir_path: '{{ playbook_dir }}/build-dir'
+# extra arguments to `ansible-bender build`, e.g. `--no-cache`
+extra_bender_args: ''
 
 # configuration for the container image build process
 image_build:
