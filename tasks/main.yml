@@ -15,12 +15,12 @@
   copy:
     src: '{{ image_build.pypirc_path }}'
     dest: '{{ build_dir_path }}/pypirc'
-  when: image_build.github_app_cert_path != ""
+  when: '"pypirc_path" in image_build and image_build.pypirc_path != ""'
 - name: copy Github app .pem file is there is one
   copy:
     src: '{{ image_build.github_app_cert_path }}'
     dest: '{{ build_dir_path }}/github-app.private-key.pem'
-  when: image_build.github_app_cert_path != ""
+  when: '"github_app_cert_path" in image_build and image_build.github_app_cert_path != ""'
 - name: copy the playbook to build-dir
   copy:
     src: '{{ role_path }}/files/build_recipe.yml'
