@@ -8,6 +8,7 @@ ExecStartPre=-/usr/bin/podman create --name {{ container_name }} {{ image_name }
 ExecStart=/usr/bin/podman start -a {{ container_name }}
 ExecStop=/usr/bin/podman stop -t 10 {{ container_name }}
 KillMode=process
+RestartSec=10000ms
 
 [Install]
 WantedBy=multi-user.target
